@@ -1,0 +1,74 @@
+import React, { useState } from 'react';
+
+function AnimalGame() {
+  const [animalName, setAnimalName] = useState(''); // Stanje za točno složeno ime životinje
+  const [animalFacts, setAnimalFacts] = useState(''); // Stanje za činjenice o životinji
+  const [isLoading, setIsLoading] = useState(false); // Stanje za prikazivanje učitavanja
+  const [error, setError] = useState(''); // Stanje za prikazivanje grešaka
+
+  // Ova funkcija se poziva kada dijete uspješno složi riječ
+  const handleCorrectGuess = async (correctAnimal) => {
+    // Postavi ime životinje (možeš ga odmah prikazati)
+    setAnimalName(correctAnimal.toUpperCase());
+    
+    setIsLoading(true); // Počinjemo učitavati
+    setError(''); // Poništi prethodne greške
+    setAnimalFacts(''); // Očisti prethodne činjenice
+
+    try {
+      // Šaljemo POST zahtjev našem lokalnom backendu
+      const response = await fetch('http://localhost:3001/api/animal-facts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Šaljemo naziv životinje u tijelu zahtjeva
+        body: JSON.stringify({ animalName: correctAnimal }),
+      });
+
+      // Provjeri je li odgovor uspješan (status 2xx)
+      if (!response.ok) {
+        const errorData = await response.json();
+        // Baci grešku koja će biti uhvaćena u catch bloku
+        throw new Error(errorData.error || 'Došlo je do greške prilikom dohvata informacija.');
+      }
+
+      const data = await response.json();
+      setAnimalFacts(data.facts); // Postavi dobivene činjenice u stanje
+    } catch (err) {
+      console.error('Greška pri dohvatu činjenica o životinjama:', err);
+      setError(`Ups! ${err.message}`); // Prikaži korisniku prilagođenu poruku o grešci
+      setAnimalFacts('Nismo uspjeli dohvatiti zanimljivosti o ovoj životinji. Pokušaj ponovno!');
+    } finally {
+      setIsLoading(false); // Završili smo s učitavanjem
+    }
+  };
+
+  return (
+    <div>
+      {/* Ovdje dolazi tvoj postojeći UI za prikaz slike i slaganje slova */}
+      {/* Npr. gumb za testiranje funkcionalnosti nakon slaganja */}
+      <button onClick={() => handleCorrectGuess('lav')}>Složi "LAV"</button>
+      <button onClick={() => handleCorrectGuess('zebra')}>Složi "ZEBRA"</button>
+      <button onClick={() => handleCorrectGuess('žirafa')}>Složi "ŽIRAFA"</button>
+
+      {/* Prikaz točno složene riječi (opcionalno) */}
+      {animalName && (
+        <p>Čestitamo! Složio/la si riječ: **{animalName}**!</p>
+      )}
+
+      {/* Prikaz stanja (učitavanje, greška, činjenice) */}
+      {isLoading && <p>Učitavam zanimljivosti o {animalName.toLowerCase()}...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      
+      {animalFacts && !isLoading && !error && (
+        <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+          <h3>Zanimljivosti o {animalName.toLowerCase()}:</h3>
+          <p>{animalFacts}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AnimalGame;

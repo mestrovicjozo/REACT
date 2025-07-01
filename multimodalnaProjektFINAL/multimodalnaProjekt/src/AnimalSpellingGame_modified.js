@@ -57,6 +57,9 @@ const AnimalSpellingGame = () => {
     height: window.innerHeight,
   });
 
+  const [animalFacts, setAnimalFacts] = useState("");
+  const [factsLoading, setFactsLoading] = useState(false);
+
   const toggleEraseMode = () => {
     setIsEraseMode(true);
   };
@@ -159,6 +162,7 @@ const AnimalSpellingGame = () => {
       setLevel(previousLevel);
       setCurrentIndex(previousIndex);
       loadAnimal(previousAnimal, previousLevel);
+      setAnimalFacts(""); // Reset facts on undo
     }
   };
 
@@ -171,6 +175,7 @@ const AnimalSpellingGame = () => {
       setLevel(nextLevel);
       setCurrentIndex(nextIndex);
       loadAnimal(nextAnimal, nextLevel);
+      setAnimalFacts(""); // Reset facts on next
     }
   };
 
@@ -225,6 +230,23 @@ const AnimalSpellingGame = () => {
         // Hide confetti after 3 seconds
         setTimeout(() => setShowConfetti(false), 3000);
 
+        // Fetch animal facts from backend
+        setFactsLoading(true);
+        fetch("/api/animal-facts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ animalName: currentAnimal.ime })
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAnimalFacts(data.facts);
+            setFactsLoading(false);
+          })
+          .catch(() => {
+            setAnimalFacts("Nije moguće dohvatiti činjenice o životinji.");
+            setFactsLoading(false);
+          });
+
         // If it's the last word, show the celebration
         if (currentIndex === animalSequence.length - 1) {
           setShowFinalConfetti(true);
@@ -245,6 +267,8 @@ const AnimalSpellingGame = () => {
       } catch (error) {
         console.log('Error with audio:', error);
       }
+    } else {
+      setAnimalFacts(""); // Reset facts when not correct
     }
   }, [isCorrect]);
 
@@ -361,6 +385,14 @@ const AnimalSpellingGame = () => {
                     <FontAwesomeIcon icon={faChevronRight} size="2x" />
                   </motion.button>
                 </motion.div>
+              )}
+              {isCorrect && (
+                <div className="cartoon-facts absolute right-[-440px] top-1/2 -translate-y-1/2 z-40">
+                  {factsLoading ? "Učitavam zanimljive činjenice..." :
+                    animalFacts === "Nije moguće dohvatiti činjenice o životinji." ? (
+                      <span style={{ color: '#e53e3e', fontWeight: 'bold' }}>Nažalost, ne mogu dohvatiti zanimljive činjenice o ovoj životinji. Pokušaj ponovno kasnije!</span>
+                    ) : animalFacts}
+                </div>
               )}
             </div>
 
