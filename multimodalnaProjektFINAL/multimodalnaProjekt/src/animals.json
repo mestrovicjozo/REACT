@@ -1,0 +1,37 @@
+[
+  {
+    "ime": "PAS",
+    "putanja": "images/dog.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "MEDVJED",
+    "putanja": "images/bear.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "MAČKA",
+    "putanja": "images/cat.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "ZEC",
+    "putanja": "images/rabbit.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "PAPIGA",
+    "putanja": "images/parrot.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "SLON",
+    "putanja": "images/elephant.jpg",
+    "pojavioSePrije": false
+  },
+  {
+    "ime": "ŽIRAFA",
+    "putanja": "images/giraffe.jpg",
+    "pojavioSePrije": false
+  }
+]
