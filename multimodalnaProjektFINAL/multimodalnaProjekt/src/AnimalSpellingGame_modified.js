@@ -232,7 +232,7 @@ const AnimalSpellingGame = () => {
 
         // Fetch animal facts from backend
         setFactsLoading(true);
-        fetch("/api/animal-facts", {
+        fetch("http://localhost:3001/api/animal-facts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ animalName: currentAnimal.ime })
@@ -282,7 +282,7 @@ const AnimalSpellingGame = () => {
           whileHover={{ scale: 1.1, rotate: 12 }}
           whileTap={{ scale: 0.95 }}
         >
-          <FontAwesomeIcon icon={faGear} size="1.5x" />
+          <FontAwesomeIcon icon={faGear} size="2x" />
         </motion.button>
       </div>
 
